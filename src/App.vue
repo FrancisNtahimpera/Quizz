@@ -37,20 +37,25 @@ const questions= ref ([
           ])
         
      
-     const score = computed(() => {
+      const quizCompleted = ref(false)
+      const currentQuestion = ref(0)
+       const score = computed(() => {
        let value = 0
-       questions.value.map(q =>{
-         if(q.selected == q.answer){
-           value++
-         }
-       })
-       return value
-     })   
-     const getCurrentQuestion = computed(() => {
-       let question = questions.value[currentQuestion.value]
-       question.index = currentQuestion.value
-       return question
+        questions.value.map(q => {
+          if(q.selected == q.answer){
+            value++
+          }
+        })
+        return value
      })
+      const getCurrentQuestion = computed(()=>{
+        let question = questions.value[currentQuestion.value]
+        question.index = currentQuestion.value
+        return question 
+      })
+
+
+
      const setAnswer = evt =>{
        questions.value[currentQuestion.value].selected = evt.target.value
        evt.target.value = null
@@ -74,7 +79,35 @@ const questions= ref ([
       <span class="question">
         {{ getCurrentQuestion.question }}
       </span>
-      <span class="score"> Score {{ score }} / {{ currentQuestion.lenght }}</span>
+      <span class="score"> Score {{ score }} / {{ questions.lenght }}</span>
+    </div>
+    <div class="options">
+      <label 
+      v-for="(option, index) in getCurrentQuestion.options" 
+        :key="index"
+        :class="` option ${
+              getCurrentQuestion.selected == index
+              ? index == getCurrentQuestion.answer
+              ? 'correct'
+              : 'wrong'
+              :''
+        } ${ 
+          getCurrentQuestion.selected != null && 
+          index != getCurrentQuestion.selected
+          ? 'disabled'
+          :''
+
+
+        }   `"><br>
+        <input type="radio" 
+        :name=" getCurrentQuestion.index" 
+        :value="index"
+        v-model="getCurrentQuestion.selected"
+        :disabled = "getCurrentQuestion.selected "
+        @change="setAnswer">
+        <span>{{  option }}</span> <br> <br>
+
+      </label>
     </div>
   </section>
 
